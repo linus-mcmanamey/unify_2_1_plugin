@@ -22,33 +22,11 @@ Coordinate 2-8 specialized agents in parallel, sequential, or hybrid workflows:
 - **JSON Communication Protocol** - Standardized agent responses with role-specific metrics
 - **Quality Gates** - Mandatory syntax, linting, formatting, and testing validation
 
-## Installation
 
-```bash
-# Copy plugin to Claude Code plugins directory
-cp -r .claude/plugins/repos/unify_2_1 ~/.claude/plugins/repos/
-
-# Or use as local plugin (already configured in this project)
-# Plugin is available at: .claude/plugins/repos/unify_2_1
-```
-
-## Getting Started
-
-### Quick Start
-
-1. **Execute a slash command**:
-   ```
-   /orchestrate "Create a PySpark ETL pipeline for customer data"
-   ```
-
-2. **Launch a specialized agent**:
-   ```
-   /code-review python_files/silver/cms/
-   ```
 
 # Agents
 
-## Phase 1: Core Development Agents
+## Core Development Agents
 
 **developer-pyspark** - PySpark ETL development for Azure Synapse
 - Metrics: dataframes_created, tables_written, rows_processed
