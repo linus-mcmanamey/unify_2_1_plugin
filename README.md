@@ -280,6 +280,38 @@ Use skill: multi-agent-orchestration
 Use skill: skill-creator
 ```
 
+**Example: Creating a Database Schema Skill**
+```
+You: "I want to create a skill that provides detailed schema information for all database tables"
+
+Claude loads skill-creator, then guides you through:
+
+1. Skill purpose and scope
+   → Centralized database schema reference
+   → Column definitions, data types, constraints
+   → Relationships and foreign keys
+
+2. Skill structure
+   → Create: .claude/skills/database-schemas.md
+   → Organize by: database → table → columns
+   → Include: sample queries and common patterns
+
+3. Trigger configuration (skill-rules.json)
+   → Keywords: ["schema", "table", "column", "database", "field"]
+   → Intent patterns: ["what.*schema", "show.*table.*structure"]
+   → Priority: critical (for data work)
+
+4. Integration with existing skills
+   → Works with: schema-reference, pyspark-patterns
+   → Loads automatically when schema questions detected
+
+Result: On-demand database schema knowledge that activates automatically
+        when you ask schema-related questions, without polluting context
+        for non-database work.
+```
+
+
+
 ## Hooks
 
 This plugin provides a **dual-stage hook pipeline** that intelligently routes prompts:
