@@ -16,3 +16,8 @@ Thumbs.db
 *.tmp
 .cache/
 .env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

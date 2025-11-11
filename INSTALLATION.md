@@ -16,7 +16,7 @@ The hooks are **already configured** in `.claude/settings.json`:
 ```json
 {
   "hooks": {
-    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh"
+    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py"
   }
 }
 ```
@@ -45,7 +45,7 @@ echo '{"prompt":"Fix linting across all layers"}' | \
 
 # Test combined hook (skill + orchestrator)
 echo '{"prompt":"Generate gold table from silver data"}' | \
-  bash .claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh | jq
+  python3 .claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py | jq
 ```
 
 ### Check Logs
@@ -80,11 +80,9 @@ tail -f ~/.claude/hook_logs/orchestrator_hook.log
 │   ├── project-architecture.md
 │   └── skill-rules.json
 ├── hooks/                     # 3 intelligent hooks
-│   ├── combined-prompt-hook.sh
+│   ├── combined-prompt-hook.py
 │   ├── orchestrator_interceptor.py
-│   ├── skill-activation-prompt.sh
-│   ├── skill-activation-prompt.ts
-│   ├── package.json
+│   ├── skill-activation-prompt.py
 │   └── README.md
 ├── plugin.json               # Plugin metadata
 ├── README.md                 # Plugin documentation
@@ -195,7 +193,7 @@ User Prompt
 ```json
 {
   "hooks": {
-    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh"
+    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py"
   }
 }
 ```
@@ -273,14 +271,6 @@ token_estimates = {
 # Check Python dependencies
 python3 -c "import loguru; print('loguru OK')"
 pip install loguru  # If missing
-
-# Check jq (for combined hook)
-which jq
-sudo apt-get install -y jq  # If missing
-
-# Check npx (for skill hook)
-which npx
-npm install -g npx  # If missing
 ```
 
 ### Hook Errors
@@ -334,7 +324,7 @@ Comment out in `.claude/settings.json`:
 ```json
 {
   // "hooks": {
-  //   "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh"
+  //   "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py"
   // }
 }
 ```
@@ -345,8 +335,8 @@ Then restart Claude Code.
 
 ```bash
 # Test skill hook only
-echo '{"prompt":"Generate PySpark ETL"}' | \
-  bash .claude/plugins/repos/unify_2_1/hooks/skill-activation-prompt.sh
+echo '{"prompt":"Generate PySpark ETL","session_id":"test","cwd":"/workspaces"}' | \
+  python3 .claude/plugins/repos/unify_2_1/hooks/skill-activation-prompt.py | jq
 
 # Test orchestrator only
 echo '{"prompt":"Fix linting everywhere"}' | \
@@ -354,7 +344,7 @@ echo '{"prompt":"Fix linting everywhere"}' | \
 
 # Test combined
 echo '{"prompt":"Complex task"}' | \
-  bash .claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh
+  python3 .claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py
 ```
 
 ### Global vs Project Hooks

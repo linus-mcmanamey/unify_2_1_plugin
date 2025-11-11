@@ -41,7 +41,7 @@ After installation, configure the hooks in your `~/.claude/settings.json`:
 ```json
 {
   "hooks": {
-    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh"
+    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py"
   }
 }
 ```

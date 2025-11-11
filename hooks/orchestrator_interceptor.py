@@ -6,7 +6,6 @@ Analyzes user prompts and injects orchestrator invocation context for complex ta
 import json
 import sys
 from pathlib import Path
-from datetime import datetime
 from loguru import logger
 
 # Configure loguru
@@ -27,7 +26,6 @@ logger.add(sys.stderr, level="ERROR")
 
 def estimate_complexity_tokens(prompt: str, complexity: str) -> dict[str, int]:
     """Estimate token usage based on complexity assessment."""
-    base_prompt_tokens = len(prompt.split()) * 1.3
     token_estimates = {
         "simple_query": {
             "orchestrator_analysis": 500,

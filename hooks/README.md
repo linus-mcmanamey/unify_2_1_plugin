@@ -19,7 +19,7 @@ This plugin provides **three hooks** that work together to enhance Claude Code's
                  │
                  ▼
     ┌────────────────────────────────────┐
-    │   combined-prompt-hook.sh          │ ← Single entry point
+    │   combined-prompt-hook.py          │ ← Single entry point
     │   (Hook Orchestration Layer)       │
     └────────────────┬───────────────────┘
                      │
@@ -29,7 +29,7 @@ This plugin provides **three hooks** that work together to enhance Claude Code's
 ┌───────────────────┐   ┌──────────────────────┐
 │  STAGE 1: SKILLS  │   │  STAGE 2: ORCHESTRATOR│
 │  skill-activation │   │  orchestrator-       │
-│  -prompt.sh       │   │  interceptor.py      │
+│  -prompt.py       │   │  interceptor.py      │
 └────────┬──────────┘   └──────────┬───────────┘
          │                          │
          ▼                          ▼
@@ -52,7 +52,7 @@ This plugin provides **three hooks** that work together to enhance Claude Code's
 
 ## Hook 1: Skill Activation
 
-**File**: `skill-activation-prompt.sh` + `skill-activation-prompt.ts`
+**File**: `skill-activation-prompt.py`
 
 **Purpose**: Load domain-specific knowledge before execution
 
@@ -118,16 +118,22 @@ Present execution plan with user approval options.
 
 ## Hook 3: Combined Hook
 
-**File**: `combined-prompt-hook.sh`
+**File**: `combined-prompt-hook.py`
 
-**Purpose**: Chain both hooks seamlessly
+**Purpose**: Chain both hooks seamlessly in pure Python
 
 **Logic**:
 1. Read prompt once from stdin
-2. Pass to skill-activation hook → Get skill recommendations
-3. Pass to orchestrator hook → Get complexity analysis
-4. Merge both outputs
+2. Pass to skill-activation-prompt.py → Get skill recommendations (JSON)
+3. Pass to orchestrator_interceptor.py → Get complexity analysis (JSON)
+4. Parse and merge both JSON outputs
 5. Return combined JSON context
+
+**Benefits**:
+- No bash/jq dependencies
+- Better error handling
+- Type-safe with proper JSON parsing
+- Easier to debug and maintain
 
 ## Installation
 
@@ -138,7 +144,7 @@ Update `.claude/settings.json` to use the plugin hooks:
 ```json
 {
   "hooks": {
-    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh"
+    "user-prompt-submit": ".claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py"
   }
 }
 ```
@@ -156,7 +162,7 @@ Then configure in `~/.claude/settings.json`:
 ```json
 {
   "hooks": {
-    "user-prompt-submit": ".claude/hooks/combined-prompt-hook.sh"
+    "user-prompt-submit": ".claude/hooks/combined-prompt-hook.py"
   }
 }
 ```
@@ -324,8 +330,8 @@ Strategy: Single pyspark-developer agent
 ### Test Skill Hook Only
 
 ```bash
-echo '{"prompt":"Generate PySpark table from bronze_cms"}' | \
-  bash .claude/plugins/repos/unify_2_1/hooks/skill-activation-prompt.sh
+echo '{"prompt":"Generate PySpark table from bronze_cms","session_id":"test","cwd":"/workspaces"}' | \
+  python3 .claude/plugins/repos/unify_2_1/hooks/skill-activation-prompt.py | jq
 ```
 
 ### Test Orchestrator Hook Only
@@ -339,7 +345,7 @@ echo '{"session_id":"test","cwd":"/workspaces","prompt":"Fix linting across all 
 
 ```bash
 echo '{"session_id":"test","cwd":"/workspaces","prompt":"Generate gold table from silver data"}' | \
-  bash .claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.sh | jq
+  python3 .claude/plugins/repos/unify_2_1/hooks/combined-prompt-hook.py | jq
 ```
 
 ## Troubleshooting
@@ -439,11 +445,9 @@ User receives comprehensive response
 ```
 .claude/plugins/repos/unify_2_1/hooks/
 ├── README.md                          # This file
-├── combined-prompt-hook.sh            # Main entry point (chains hooks)
+├── combined-prompt-hook.py            # Main entry point (chains hooks in Python)
 ├── orchestrator_interceptor.py        # Complexity analysis + routing
-├── skill-activation-prompt.sh         # Skill detection (bash wrapper)
-├── skill-activation-prompt.ts         # Skill detection (TypeScript logic)
-└── package.json                       # Node dependencies for TypeScript hook
+└── skill-activation-prompt.py         # Skill detection (Python implementation)
 ```
 
 ## Version History
@@ -460,7 +464,7 @@ User receives comprehensive response
 For issues:
 1. Check logs: `~/.claude/hook_logs/orchestrator_hook.log`
 2. Test hooks individually (see Testing section)
-3. Verify dependencies (Python, loguru, jq, npx)
+3. Verify dependencies (Python, loguru)
 4. Review this README
 
 ## License
